@@ -10,6 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: write
 
     steps:
@@ -26,14 +27,11 @@ jobs:
       run: yarn install --frozen-lockfile
 
     - name: Run tests with coverage
-      run: yarn test:run:coverage
+      run: npx vitest --coverage.enabled true
 
-    - name: Ensure coverage directory exists
-      run: |
-        if [ ! -d "coverage" ]; then
-          echo "Coverage directory not found, creating it"
-          mkdir -p coverage
-        fi
+    - name: Report Coverage
+      if: always()
+      uses: davelosert/vitest-coverage-report-action@v2
 
     - name: Upload coverage artifacts
       uses: actions/upload-artifact@v4
@@ -41,15 +39,6 @@ jobs:
         name: coverage-report
         path: coverage/
         retention-days: 30
-
-    - name: Comment PR with coverage
-      if: github.event_name == 'pull_request'
-      uses: romeovs/lcov-reporter-action@v0.4.0
-      with:
-        lcov-file: ./coverage/lcov.info
-        title: '📊 Test Coverage Report'
-        delete-old-comments: true
-        filter-changed-files: true
 
     # Alternative: Custom coverage comment (uncomment if you prefer more control)
     # - name: Generate custom coverage comment
