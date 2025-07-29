@@ -31,7 +31,7 @@ coverage-report-poc/
 ### Prerequisites
 
 - Node.js 18.x or higher
-- npm
+- Yarn
 
 ### Installation
 
@@ -43,29 +43,29 @@ cd coverage-report-poc
 
 2. Install dependencies:
 ```bash
-npm install
+yarn install
 ```
 
 ### Running Tests
 
 #### Run tests in watch mode:
 ```bash
-npm test
+yarn test
 ```
 
 #### Run tests once:
 ```bash
-npm run test:run
+yarn test:run
 ```
 
 #### Run tests with coverage:
 ```bash
-npm run test:coverage
+yarn test:coverage
 ```
 
 #### Run tests once with coverage:
 ```bash
-npm run test:run:coverage
+yarn test:run:coverage
 ```
 
 ## Available Functions
@@ -93,10 +93,11 @@ The GitHub Actions workflow (`/.github/workflows/ci.yml`) automatically:
 
 1. Runs on push to main/master branch and pull requests
 2. Tests against Node.js 18.x and 20.x
-3. Installs dependencies
+3. Installs dependencies using Yarn
 4. Runs tests with coverage
 5. Uploads coverage reports to Codecov (optional)
 6. Stores coverage artifacts for 30 days
+7. **Comments on pull requests with coverage information** 📊
 
 ### Coverage Reports
 
@@ -104,6 +105,22 @@ Coverage reports are generated in multiple formats:
 - **Text**: Console output
 - **JSON**: `coverage/coverage-final.json`
 - **HTML**: `coverage/index.html` (viewable in browser)
+- **LCOV**: `coverage/lcov.info` (used for PR comments)
+
+#### Pull Request Coverage Comments
+
+When you create a pull request, the CI pipeline will automatically:
+- Run tests with coverage
+- Generate a coverage report
+- Add a comment to the PR showing:
+  - Overall coverage percentage
+  - Coverage for files changed in the PR
+  - Coverage trends
+  - Uncovered lines
+
+This helps reviewers understand the impact of changes on test coverage.
+
+**Note**: We use the actively maintained `j-g00da/lcov-action` for reliable PR coverage reporting with LCOV format support.
 
 ## Contributing
 

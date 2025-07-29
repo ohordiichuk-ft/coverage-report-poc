@@ -22,26 +22,84 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        cache: 'yarn'
 
     - name: Install dependencies
-      run: npm ci
+      run: yarn install --frozen-lockfile
 
     - name: Run tests with coverage
-      run: npm run test:run:coverage
+      run: yarn test:run:coverage
 
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage/coverage-final.json
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-        verbose: true
+    - name: Ensure coverage directory exists
+      run: |
+        if [ ! -d "coverage" ]; then
+          echo "Coverage directory not found, creating it"
+          mkdir -p coverage
+        fi
 
     - name: Upload coverage artifacts
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage/
-        retention-days: 30 
+        retention-days: 30
+
+    - name: Comment PR with coverage
+      if: github.event_name == 'pull_request'
+      uses: j-g00da/lcov-action@v0.5.0
+      with:
+        lcov-file: ./coverage/lcov.info
+        title: '📊 Test Coverage Report'
+        delete-old-comments: true
+        filter-changed-files: true
+
+    # Alternative: Custom coverage comment (uncomment if you prefer more control)
+    # - name: Generate custom coverage comment
+    #   if: github.event_name == 'pull_request'
+    #   run: |
+    #     if [ -f "coverage/lcov.info" ]; then
+    #       echo "📊 **Test Coverage Report**" > coverage-comment.md
+    #       echo "" >> coverage-comment.md
+    #       echo "Coverage report generated for this PR." >> coverage-comment.md
+    #       echo "" >> coverage-comment.md
+    #       echo "**Coverage Files:**" >> coverage-comment.md
+    #       echo "- [HTML Report](./coverage/index.html)" >> coverage-comment.md
+    #       echo "- [JSON Report](./coverage/coverage-final.json)" >> coverage-comment.md
+    #       echo "- [LCOV Report](./coverage/lcov.info)" >> coverage-comment.md
+    #     else
+    #       echo "⚠️ **No coverage report found**" > coverage-comment.md
+    #       echo "Coverage report was not generated. Please check the test execution." >> coverage-comment.md
+    #     fi
+    #
+    # - name: Comment PR with custom coverage
+    #   if: github.event_name == 'pull_request'
+    #   uses: actions/github-script@v7
+    #   with:
+    #     script: |
+    #       const fs = require('fs');
+    #       const comment = fs.readFileSync('coverage-comment.md', 'utf8');
+    #       
+    #       // Delete old coverage comments
+    #       const { data: comments } = await github.rest.issues.listComments({
+    #         owner: context.repo.owner,
+    #         repo: context.repo.repo,
+    #         issue_number: context.issue.number,
+    #       });
+    #       
+    #       for (const comment of comments) {
+    #         if (comment.body.includes('📊 **Test Coverage Report**')) {
+    #           await github.rest.issues.deleteComment({
+    #             owner: context.repo.owner,
+    #             repo: context.repo.repo,
+    #             comment_id: comment.id,
+    #           });
+    #         }
+    #       }
+    #       
+    #       // Add new comment
+    #       await github.rest.issues.createComment({
+    #         owner: context.repo.owner,
+    #         repo: context.repo.repo,
+    #         issue_number: context.issue.number,
+    #         body: comment,
+    #       }); 
