@@ -42,7 +42,7 @@ jobs:
 
     - name: Comment PR with coverage
       if: github.event_name == 'pull_request'
-      uses: j-g00da/lcov-action@v0.4.0
+      uses: romeovs/lcov-reporter-action@0.4.0
       with:
         lcov-file: ./coverage/lcov.info
         title: '📊 Test Coverage Report'
