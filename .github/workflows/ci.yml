@@ -10,18 +10,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 20.x
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 20.x
         cache: 'yarn'
 
     - name: Install dependencies
@@ -46,7 +42,7 @@ jobs:
 
     - name: Comment PR with coverage
       if: github.event_name == 'pull_request'
-      uses: j-g00da/lcov-action@v0.5.0
+      uses: j-g00da/lcov-action@v0.4.0
       with:
         lcov-file: ./coverage/lcov.info
         title: '📊 Test Coverage Report'
