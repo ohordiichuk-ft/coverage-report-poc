@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { add } from '../index.js';
+import {i_am_covered} from '../partially_covered_file.js'
 
 describe('Math Utility Functions', () => {
   describe('add', () => {
@@ -9,3 +10,9 @@ describe('Math Utility Functions', () => {
     });
   });
 }); 
+
+describe('partialy covered', () => {
+  it('should return some string', () => {
+    expect(i_am_covered()).toBe('yeey!');
+  });
+});
