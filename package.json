@@ -1,0 +1,19 @@
+{
+  "name": "coverage-report-poc",
+  "version": "1.0.0",
+  "description": "A simple proof of concept project with test coverage reporting",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:run": "vitest run",
+    "test:run:coverage": "vitest run --coverage"
+  },
+  "keywords": ["testing", "coverage", "vitest", "proof-of-concept"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vitest": "^1.0.0",
+    "@vitest/coverage-v8": "^1.0.0"
+  }
+} 
